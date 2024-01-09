@@ -290,7 +290,7 @@ class DADataBaseSampler(object):
         # self.gt_path = pathlib.Path(sampler_cfg.GT_PATH)
         self.use_van = self.sampler_cfg.get('USE_VAN', None)
         self.min_sampling_dis = sampler_cfg.MIN_SAMPLING_DIS
-        self.max_sampling_dis = sampler_cfg.MIN_SAMPLING_DIS
+        self.max_sampling_dis = sampler_cfg.MAX_SAMPLING_DIS
         self.occlusion_noise = sampler_cfg.OCCLUSION_NOISE
         self.occlusion_offset = sampler_cfg.OCCLUSION_OFFSET
         self.sampling_method = sampler_cfg.SAMPLING_METHOD
@@ -427,6 +427,9 @@ class DADataBaseSampler(object):
         return new_points
 
     def filter_by_difficulty(self, db_infos, removed_difficulty):
+        """
+        修改自 gt_sampling ，考虑若 db_info 不存在 difficulty 字段则不执行过滤
+        """
         new_db_infos = {}
         for key, dinfos in db_infos.items():
             pre_len = len(dinfos)
@@ -570,6 +573,7 @@ class DADataBaseSampler(object):
                 # mv height
                 obj_points[:, 2] -= mv_height[idx]
             '''
+            # da_sampling 核心修改
             if self.sampling_method == 'LiDAR-aware':
 
                 obj_points = self.la_sampling(obj_points,
@@ -642,6 +646,7 @@ class DADataBaseSampler(object):
                 if self.sampler_cfg.get('DATABASE_WITH_FAKELIDAR', False):
                     sampled_boxes1 = box_utils.boxes3d_kitti_fakelidar_to_lidar(sampled_boxes1)
                 sampled_boxes = copy.deepcopy(sampled_boxes1)
+                # todo 车前不一定都算 X 轴
                 sampled_boxes[:, 0] += np.random.random()*(self.max_sampling_dis-self.min_sampling_dis) + self.min_sampling_dis
 
                 iou1 = iou3d_nms_utils.boxes_bev_iou_cpu(sampled_boxes[:, 0:7], existed_boxes[:, 0:7])
