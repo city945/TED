@@ -4,9 +4,9 @@ import pickle
 import numpy as np
 from skimage import io
 
-from ...ops.roiaware_pool3d import roiaware_pool3d_utils
-from ...utils import box_utils, calibration_kitti, common_utils, object3d_kitti
-from ..dataset import DatasetTemplate
+from pcdet.ops.roiaware_pool3d import roiaware_pool3d_utils
+from pcdet.utils import box_utils, calibration_kitti, common_utils, object3d_kitti
+from pcdet.datasets.dataset import DatasetTemplate
 
 
 class KittiDataset(DatasetTemplate):
@@ -242,8 +242,10 @@ class KittiDataset(DatasetTemplate):
         with open(db_info_save_path, 'wb') as f:
             pickle.dump(all_db_infos, f)
 
-    @staticmethod
-    def generate_prediction_dicts(batch_dict, pred_dicts, class_names, output_path=None):
+        return all_db_infos
+
+    #staticmethod
+    def generate_prediction_dicts(self,batch_dict, pred_dicts, class_names, output_path=None):
         """
         Args:
             batch_dict:
@@ -299,6 +301,7 @@ class KittiDataset(DatasetTemplate):
             frame_id = batch_dict['frame_id'][index]
 
             single_pred_dict = generate_single_sample_dict(index, box_dict)
+
             single_pred_dict['frame_id'] = frame_id
             annos.append(single_pred_dict)
 
@@ -429,7 +432,7 @@ if __name__ == '__main__':
         import yaml
         from pathlib import Path
         from easydict import EasyDict
-        dataset_cfg = EasyDict(yaml.load(open(sys.argv[2])))
+        dataset_cfg = EasyDict(yaml.safe_load(open(sys.argv[2])))
         ROOT_DIR = (Path(__file__).resolve().parent / '../../../').resolve()
         create_kitti_infos(
             dataset_cfg=dataset_cfg,

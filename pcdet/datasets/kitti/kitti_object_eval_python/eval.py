@@ -502,6 +502,7 @@ def eval_class(gt_annos,
                         compute_fp=False)
                     tp, fp, fn, similarity, thresholds = rets
                     thresholdss += thresholds.tolist()
+
                 thresholdss = np.array(thresholdss)
                 thresholds = get_thresholds(thresholdss, total_num_valid_gt)
                 thresholds = np.array(thresholds)
@@ -603,6 +604,7 @@ def do_eval(gt_annos,
 
     ret = eval_class(gt_annos, dt_annos, current_classes, difficultys, 1,
                      min_overlaps)
+
     mAP_bev = get_mAP(ret["precision"])
     mAP_bev_R40 = get_mAP_R40(ret["precision"])
 
@@ -613,6 +615,7 @@ def do_eval(gt_annos,
                      min_overlaps)
     mAP_3d = get_mAP(ret["precision"])
     mAP_3d_R40 = get_mAP_R40(ret["precision"])
+
     if PR_detail_dict is not None:
         PR_detail_dict['3d'] = ret['precision']
     return mAP_bbox, mAP_bev, mAP_3d, mAP_aos, mAP_bbox_R40, mAP_bev_R40, mAP_3d_R40, mAP_aos_R40
