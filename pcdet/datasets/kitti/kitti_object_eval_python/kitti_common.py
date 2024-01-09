@@ -201,6 +201,34 @@ def filter_annos_low_score(image_annos, thresh):
         new_image_annos.append(img_filtered_annotations)
     return new_image_annos
 
+def filter_gt_annos_dis(image_annos, dis_min=0, dis_max=100):
+    new_image_annos = []
+    for anno in image_annos:
+        img_filtered_annotations = {}
+
+        relevant_annotation_indices = [
+            i for i, s in enumerate(anno['location']) if (dis_min<np.sqrt(s[0]**2+s[2]**2) < dis_max)
+        ]
+        for key in anno.keys():
+            img_filtered_annotations[key] = (
+                    anno[key][relevant_annotation_indices])
+        new_image_annos.append(img_filtered_annotations)
+    return new_image_annos
+def filter_det_annos_dis(image_annos, dis_min=0, dis_max=100):
+    new_image_annos = []
+    for anno in image_annos:
+        img_filtered_annotations = {}
+        relevant_annotation_indices = [
+            i for i, s in enumerate(anno['location']) if (dis_min<np.sqrt(s[0]**2+s[2]**2) < dis_max)
+        ]
+        for key in anno.keys():
+            if key in ['name','alpha','bbox','dimensions',
+                       'location','rotation_y','score','boxes_lidar',
+                       'bbox']:
+                img_filtered_annotations[key] = (
+                        anno[key][relevant_annotation_indices])
+        new_image_annos.append(img_filtered_annotations)
+    return new_image_annos
 def kitti_result_line(result_dict, precision=4):
     prec_float = "{" + ":.{}f".format(precision) + "}"
     res_line = []
