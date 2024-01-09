@@ -28,7 +28,16 @@ class DataAugmentor(object):
             root_path=self.root_path,
             sampler_cfg=config,
             class_names=self.class_names,
-            logger=self.logger
+            logger=self.logger,
+        )
+        return db_sampler
+
+    def da_sampling(self, config=None):
+        db_sampler = database_sampler.DADataBaseSampler(
+            root_path=self.root_path,
+            sampler_cfg=config,
+            class_names=self.class_names,
+            logger=self.logger,
         )
         return db_sampler
 
